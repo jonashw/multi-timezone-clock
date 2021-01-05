@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { render } from "react-dom";
 import { Stage, Layer, Arc, Text, Circle, Group, Line } from "react-konva";
-import "./style.css";
+import "/src/style.css";
+
 let timezones = [
   { name: "Sydney", offset: 11 },
   { name: "India", offset: 5.5 },
@@ -34,6 +35,8 @@ class CenteredText extends React.Component {
 }
 const App = () => {
   const [state, setState] = useState(initialState);
+  const timeZoneNameOnHand = !state.fixedHand;
+  const timeZoneNameOnWorkday = !timeZoneNameOnHand;
   let s = Math.min(window.innerHeight, window.innerWidth) / 12;
 
   useEffect(() => {
@@ -147,10 +150,24 @@ const App = () => {
                   <Arc
                     innerRadius={tz.r - s / 2}
                     outerRadius={tz.r + s / 2}
-                    angle={(2 * 180) / 3}
+                    angle={(8 / 24) * 360}
                     rotation={360 * (3 / 24)}
                     fill="rgba(0,0,0,0.5)"
                   />
+                  {timeZoneNameOnWorkday && (
+                    <Group offstY={tz.r} rotation={360 * (12.5 / 24)}>
+                      <CenteredText
+                        text={tz.name}
+                        stroke={"rgba(0,0,0,0.5)"}
+                        strokeWidth={3}
+                        fontFamily="Roboto"
+                        fontSize={16}
+                        fillAfterStrokeEnabled={true}
+                        fill={"white"}
+                        y={-(tz.r + 15)}
+                      />
+                    </Group>
+                  )}
 
                   {Array(24)
                     .fill(0)
@@ -195,16 +212,18 @@ const App = () => {
             />
             {timezones.map((tz, tzi) => (
               <Group key={tzi}>
-                <CenteredText
-                  text={tz.name}
-                  stroke={"rgba(0,0,0,0.5)"}
-                  strokeWidth={3}
-                  fontFamily="Roboto"
-                  fontSize={16}
-                  fillAfterStrokeEnabled={true}
-                  fill={"white"}
-                  y={-(tz.r + 15)}
-                />
+                {timeZoneNameOnHand && (
+                  <CenteredText
+                    text={tz.name}
+                    stroke={"rgba(0,0,0,0.5)"}
+                    strokeWidth={3}
+                    fontFamily="Roboto"
+                    fontSize={16}
+                    fillAfterStrokeEnabled={true}
+                    fill={"white"}
+                    y={-(tz.r + 15)}
+                  />
+                )}
 
                 <Circle
                   x={0}
